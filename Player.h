@@ -3,29 +3,7 @@
 
 #include <string>
 #include <vector>
-
-// -----------------------------------------------------------------
-// 注意：Item和Weapon的完整定义由成员4（物品/存档模块）负责设计。
-// 下面是占位版本，字段按组长发的架构表来的：
-//   Item  —— 消耗品（药水/强化道具），有 name / effect / price
-//   Weapon —— 武器，有 name / attackBonus / level / upgradePrice
-// 等成员4定稿Item.h和Weapon.h之后，删掉下面这两段，改成：
-//   #include "Item.h"
-//   #include "Weapon.h"
-// 只要字段名对得上，Player.cpp基本不用改。
-// -----------------------------------------------------------------
-struct Item {
-    std::string name;
-    std::string effect; // 效果描述，比如"heal"/"shield"，具体怎么解析由成员4定
-    int price = 0;
-};
-
-struct Weapon {
-    std::string name = "拳头";
-    int attackBonus = 0;
-    int level = 1;
-    int upgradePrice = 0;
-};
+#include "Item.h"  // 成员4的正式道具类；武器也是Item（type == "weapon"）
 
 class Player {
 public:
@@ -56,17 +34,21 @@ public:
     void addGold(int amount);
     bool spendGold(int amount);
 
-    // ---- 背包（只装消耗品Item，武器不放这里）----
+    // ---- 背包（消耗品和武器都放这里，Item是成员4的类）----
     void addItem(const Item& item);
     bool removeItem(const std::string& itemName);
     const std::vector<Item>& getBag() const;
 
-    // ---- 武器（玩家同时只装备一把武器）----
-    void equipWeapon(const Weapon& weapon); // 直接替换当前武器
-    const Weapon& getWeapon() const;
+    // ---- 武器（按名字从背包里装备，玩家同时只装备一把）----
+    void equipWeapon(const std::string& weaponName); // 名字不存在或不是武器时保持原装备并提示
+    const Item& getWeapon() const;                   // 没装备时返回默认武器"拳头"
+    std::string getEquippedWeaponName() const;       // 没装备时返回空串，SaveManager存档用
 
     // ---- 状态显示 ----
     void printStatus() const;
+
+    // ---- 读档专用：直接恢复原始数值，不走升级/回血等业务逻辑 ----
+    void loadRawState(int level, int exp, int hp, int maxHp, int shield, int baseAttack, int gold);
 
 private:
     std::string name;
@@ -80,7 +62,8 @@ private:
     int shield;
 
     int baseAttack;
-    Weapon equippedWeapon; // 默认是"拳头"，没有攻击加成
+    Item equippedWeapon; // 当前装备武器的副本。不用指向背包元素的指针：vector扩容会使指针失效
+    bool hasWeapon;      // 是否真的装备了武器（false时equippedWeapon是默认"拳头"，加成0）
 
     int gold;
     std::vector<Item> bag;

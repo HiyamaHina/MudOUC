@@ -11,7 +11,8 @@ Player::Player(std::string name)
       hp(100),
       shield(0),
       baseAttack(10),
-      equippedWeapon(), // 默认武器"拳头"，攻击加成0
+      equippedWeapon("拳头", "weapon", "赤手空拳", 0, 0, 0, 0), // 默认武器，攻击加成0
+      hasWeapon(false),
       gold(0)
 {
 }
@@ -116,7 +117,7 @@ bool Player::spendGold(int amount) {
     return true;
 }
 
-// ---------------- 背包（消耗品）----------------
+// ---------------- 背包（消耗品和武器都放这里）----------------
 void Player::addItem(const Item& item) {
     bag.push_back(item);
     std::cout << name << " 获得了物品：" << item.name << "\n";
@@ -125,6 +126,11 @@ void Player::addItem(const Item& item) {
 bool Player::removeItem(const std::string& itemName) {
     for (auto it = bag.begin(); it != bag.end(); ++it) {
         if (it->name == itemName) {
+            // 如果移除的正好是当前装备的武器，卸下来恢复成"拳头"
+            if (hasWeapon && equippedWeapon.name == itemName) {
+                equippedWeapon = Item("拳头", "weapon", "赤手空拳", 0, 0, 0, 0);
+                hasWeapon = false;
+            }
             bag.erase(it);
             return true;
         }
@@ -137,14 +143,25 @@ const std::vector<Item>& Player::getBag() const {
 }
 
 // ---------------- 武器 ----------------
-void Player::equipWeapon(const Weapon& weapon) {
-    equippedWeapon = weapon;
-    std::cout << name << " 装备了武器：" << weapon.name
-               << "（攻击加成+" << weapon.attackBonus << "）\n";
+void Player::equipWeapon(const std::string& weaponName) {
+    for (const auto& item : bag) {
+        if (item.name == weaponName && item.type == "weapon") {
+            equippedWeapon = item;
+            hasWeapon = true;
+            std::cout << name << " 装备了武器：" << item.name
+                      << "（攻击加成+" << item.attackBonus << "）\n";
+            return;
+        }
+    }
+    std::cout << "背包里没有名为「" << weaponName << "」的武器，无法装备。\n";
 }
 
-const Weapon& Player::getWeapon() const {
+const Item& Player::getWeapon() const {
     return equippedWeapon;
+}
+
+std::string Player::getEquippedWeaponName() const {
+    return hasWeapon ? equippedWeapon.name : "";
 }
 
 // ---------------- 状态显示 ----------------
@@ -156,8 +173,23 @@ void Player::printStatus() const {
     std::cout << "攻击力：" << getAttack() << "（基础" << baseAttack << "）\n";
     std::cout << "金币：" << gold << "\n";
     std::cout << "武器：" << equippedWeapon.name
-               << "（等级" << equippedWeapon.level
-               << "，加成+" << equippedWeapon.attackBonus << "）\n";
+               << "（加成+" << equippedWeapon.attackBonus << "）\n";
     std::cout << "背包物品数：" << bag.size() << "\n";
     std::cout << "==============================\n";
+}
+
+// ---------------- 读档专用 ----------------
+void Player::loadRawState(int level_, int exp_, int hp_, int maxHp_,
+                          int shield_, int baseAttack_, int gold_) {
+    level = level_;
+    exp = exp_;
+    hp = hp_;
+    maxHp = maxHp_;
+    shield = shield_;
+    baseAttack = baseAttack_;
+    gold = gold_;
+    // expToNextLevel 不在成员4的存档字段里，但必须跟着 level 重算，
+    // 否则读档后升级阈值错误（比如等级3却只要100经验就升级）。
+    // 公式与 levelUp() 的成长规则对应：1级100，每升1级+50。
+    expToNextLevel = 100 + (level - 1) * 50;
 }
