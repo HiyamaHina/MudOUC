@@ -4,6 +4,8 @@
 #pragma once
 #include "Room.h"
 
+#include "CommandParser.h"
+
 #include <vector>
 
 class Game {
@@ -23,6 +25,8 @@ private:
     void runEvent();
     void runShop();
     void runRest();
+
+    CommandParser parser_;
 
     std::vector<Room> rooms_;
     int currentRoomId_ = 0;

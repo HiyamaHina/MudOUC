@@ -16,6 +16,14 @@ void Game::createMap() {
 void Game::start() {
     std::cout << "欢迎来到！\n";
 
+    std::string command;
+
+    std::cout << "请输入指令：";
+
+    std::cin >> command;
+
+    parser_.parse(command);
+
     enterRoom(1);
     chooseBranch1();
     enterRoom(3);
