@@ -18,6 +18,10 @@ add_executable(MudOUC main.cpp
         ../SaveManager.cpp
 )
 target_include_directories(MudOUC PRIVATE ../module5)
+if(MINGW)
+    # 将MinGW运行库链接进程序，避免其他电脑缺少libstdc++等DLL。
+    target_link_options(MudOUC PRIVATE -static)
+endif()
 if(MSVC)
     target_compile_options(MudOUC PRIVATE /utf-8)
 else()

@@ -60,7 +60,7 @@ void Game::showRoomScreen() const {
     else if (pendingEvent_ > 0) std::cout << "  状态：奇遇等待选择，输入4继续处理。\n";
     else if (enemyHp_ > 0)
         std::cout << "  敌人：" << enemyName_ << "  生命 " << enemyHp_ << '/' << enemyMaxHp_
-                  << "  攻击 " << enemyAttack_ << "\n  状态：战斗中，输入1攻击，击败敌人后才能离开。\n";
+                  << "  攻击 " << enemyAttack_ << "\n  状态：战斗中，输入1攻击，完成任务后才能离开。\n";
     else if (currentRoomId_ == 11)
         std::cout << "  状态：通关！最终Boss已被击败。\n";
     else
