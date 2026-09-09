@@ -28,14 +28,14 @@ inline void event(int id, Player& p) {
                            "学业性梦境", "来交换礼物吧", "校园好人（三）", "无尽黑暗"};
     std::cout << "\n[校园奇遇] " << names[id] << '\n';
     switch(id) {
-    case 1: std::cout << "1 金属许愿瓶：20金币换10护盾\n2 银矿许愿瓶：40金币换25护盾\n3 离开\n"; break;
+    case 1: std::cout << "1 金属许愿瓶：20元换10抗压\n2 银矿许愿瓶：40元换25抗压\n3 离开\n"; break;
     case 2: std::cout << "1 琥珀许愿匣：10金币，捉摸不透的祝福\n2 超钛许愿匣：10金币，璀璨华丽的祝福\n3 离开\n"; break;
-    case 3: std::cout << "1 奉献自己：承受10伤害，基础攻击+4，暴击率+5%\n2 承受十克拉的垃圾：获得10金币，暴击额外伤害+10%\n"; break;
-    case 4: std::cout << "1 接受火种：当前生命减半，基础攻击翻倍，暴击率+10%\n2 拒绝：获得30金币\n"; break;
-    case 5: std::cout << "1 继续梦境：基础攻击减少30%，获得40金币\n2 回去上班：获得18金币\n"; break;
-    case 6: std::cout << "1 祝福交换：献出一半当前生命，获得等额护盾\n2 离开\n"; break;
-    case 7: std::cout << "1 钻石盒：5金币，生命上限+20%\n2 原矿盒：5金币，基础攻击增加当前总攻击的15%\n3 离开\n"; break;
-    case 8: std::cout << "1 前往黑暗：损失一半金币\n2 对抗引力：承受生命上限35%的伤害\n"; break;
+    case 3: std::cout << "1 奉献自己：承受10压力，学力+4，灵光+5%\n2 承受十克拉的垃圾：获得10元，超常发挥+10%\n"; break;
+    case 4: std::cout << "1 接受火种：精神状态减半，学力翻倍，灵光+10%\n2 拒绝：获得30元\n"; break;
+    case 5: std::cout << "1 继续梦境：学力减少30%，获得40元\n2 回去上班：获得18元\n"; break;
+    case 6: std::cout << "1 祝福交换：精神状态减半，获得等额抗压\n2 离开\n"; break;
+    case 7: std::cout << "1 钻石盒：5元，精神状态上限+20%\n2 原矿盒：5元，学力增加15%\n3 离开\n"; break;
+    case 8: std::cout << "1 前往黑暗：损失一半生活费\n2 对抗引力：承受当前精神状态60%的压力\n"; break;
     }
     // 先读取选择再修改角色；输入中断时事件保持待处理状态。
     const int c = module5::CommandParser::readChoice(std::cin,std::cout,1,(id==1||id==2||id==7)?3:2);
@@ -51,7 +51,7 @@ inline void event(int id, Player& p) {
     case 5: if(c==1) { p.setBaseAttack(p.getBaseAttack()*70/100); p.addGold(40); } else p.addGold(18); break;
     case 6: if(c==1) { int sacrifice=p.getHp()/2; p.setHp(p.getHp()-sacrifice); p.addShield(sacrifice); } break;
     case 7: if(c==1 && pay(5)) p.addMaxHp(p.getMaxHp()*20/100); else if(c==2 && pay(5)) p.setBaseAttack(p.getBaseAttack()+p.getAttack()*15/100); break;
-    case 8: if(c==1) p.spendGold(p.getGold()/2); else p.takeDamage(p.getMaxHp()*35/100); break;
+    case 8: if(c==1) p.spendGold(p.getGold()/2); else p.takeDamage(p.getHp()*60/100); break;
     }
     std::cout << "奇遇结束。\n";
 }
