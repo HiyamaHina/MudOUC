@@ -10,6 +10,14 @@ add_executable(MudOUC main.cpp
         room.h
         ../Player.h
         ../Player.cpp
-        CommandParser.cpp
-        CommandParser.h
+        ../module5/CommandParser.cpp
+        ../module5/CommandParser.h
+        ../Item.cpp
+        ../SaveManager.cpp
 )
+target_include_directories(MudOUC PRIVATE ../module5)
+if(MSVC)
+    target_compile_options(MudOUC PRIVATE /utf-8)
+else()
+    target_compile_options(MudOUC PRIVATE -Wall -Wextra -finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()

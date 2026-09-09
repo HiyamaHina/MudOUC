@@ -128,6 +128,9 @@ void SaveManager::saveProgress(const GameProgress& progress) const {
     }
     ofs << "ROOM|" << progress.currentRoomName << "\n";
     ofs << "STAGE|" << progress.stageIndex << "\n";
+    ofs << "VERSION|" << progress.formatVersion << "\n";
+    ofs << "ROUTE|" << progress.route << "\n";
+    ofs << "ENEMYHP|" << progress.enemyHp << "\n";
 }
 
 GameProgress SaveManager::loadProgress() const {
@@ -142,6 +145,9 @@ GameProgress SaveManager::loadProgress() const {
         if (fields.empty()) continue;
         if (fields[0] == "ROOM" && fields.size() >= 2) progress.currentRoomName = fields[1];
         else if (fields[0] == "STAGE" && fields.size() >= 2) progress.stageIndex = std::stoi(fields[1]);
+        else if (fields[0] == "VERSION" && fields.size() >= 2) progress.formatVersion = std::stoi(fields[1]);
+        else if (fields[0] == "ROUTE" && fields.size() >= 2) progress.route = std::stoi(fields[1]);
+        else if (fields[0] == "ENEMYHP" && fields.size() >= 2) progress.enemyHp = std::stoi(fields[1]);
     }
     return progress;
 }

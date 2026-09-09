@@ -10,6 +10,9 @@
 struct GameProgress {
     std::string currentRoomName = "StartRoom"; // 当前所在房间的名字/编号
     int stageIndex = 0;                        // 当前处于第几关/第几阶段，方便以后扩展
+    int formatVersion = 0; // 2：保存路线和敌人血量
+    int route = 0;         // 分支房间：1战斗/商店，2事件；其他房间为0
+    int enemyHp = 0;       // 0表示已击败或没有敌人
 };
 
 // 存档管理类。对应 UML 图里的 SaveManager。

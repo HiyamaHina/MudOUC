@@ -15,6 +15,8 @@ public:
     Room(int id, std::string name, std::string description, RoomType type);
     int getId() const;
     RoomType getType() const;
+    const std::string& getName() const { return name_; }
+    const std::string& getDescription() const { return description_; }
     void showInfo() const;
 
 private:
