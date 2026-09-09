@@ -21,13 +21,13 @@ void applyItemEffect(Player& player, const Item& item) {
     } else if (item.type == "potion") {
         player.heal(item.healAmount);
         std::cout << player.getName() << " 使用了 " << item.name
-                  << "，恢复了 " << item.healAmount << " 点生命值。"
+                  << "，恢复了 " << item.healAmount << " 点精神状态。"
                   << " (当前HP: " << player.getHp() << "/" << player.getMaxHp() << ")" << std::endl;
         player.removeItem(item.name);
     } else if (item.type == "shield") {
         player.addShield(item.shieldAmount);
         std::cout << player.getName() << " 使用了 " << item.name
-                  << "，获得了 " << item.shieldAmount << " 点护盾。"
+                  << "，获得了 " << item.shieldAmount << " 点抗压。"
                   << " (当前护盾: " << player.getShield() << ")" << std::endl;
         player.removeItem(item.name);
     } else {
