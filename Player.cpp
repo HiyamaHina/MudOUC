@@ -42,19 +42,19 @@ void Player::takeDamage(int amount) {
     hp -= amount;
     if (hp < 0) hp = 0;
 
-    std::cout << name << " 受到了伤害，剩余生命：" << hp << "/" << maxHp << "\n";
+    std::cout << name << " 承受压力，剩余精神状态：" << hp << "/" << maxHp << "\n";
 }
 
 void Player::heal(int amount) {
     if (amount <= 0) return;
     hp = std::min(hp + amount, maxHp);
-    std::cout << name << " 恢复了生命，当前生命：" << hp << "/" << maxHp << "\n";
+    std::cout << name << " 恢复了精神，当前状态：" << hp << "/" << maxHp << "\n";
 }
 
 void Player::addShield(int amount) {
     if (amount <= 0) return;
     shield += amount;
-    std::cout << name << " 获得了 " << amount << " 点护盾，当前护盾：" << shield << "\n";
+    std::cout << name << " 获得了 " << amount << " 点抗压，当前值：" << shield << "\n";
 }
 
 bool Player::isAlive() const {
@@ -74,12 +74,12 @@ int Player::getGold() const {
 void Player::addGold(int amount) {
     if (amount <= 0) return;
     gold += amount;
-    std::cout << name << " 获得了 " << amount << " 金币，当前金币：" << gold << "\n";
+    std::cout << name << " 获得了 " << amount << " 元生活费，当前拥有：" << gold << "元\n";
 }
 
 bool Player::spendGold(int amount) {
     if (amount > gold) {
-        std::cout << "金币不足！\n";
+        std::cout << "生活费不足！\n";
         return false;
     }
     gold -= amount;
@@ -108,12 +108,12 @@ const std::vector<Item>& Player::getBag() const {
 
 // ---------------- 状态显示 ----------------
 void Player::printStatus() const {
-    std::cout << "========== 角色状态 ==========\n";
+    std::cout << "========== 学业概况 ==========\n";
     std::cout << "姓名：" << name << "\n";
-    std::cout << "生命：" << hp << "/" << maxHp << "  护盾：" << shield << "\n";
-    std::cout << "攻击力：" << getAttack() << "（基础" << baseAttack << "）\n";
-    std::cout << "金币：" << gold << "\n";
-    std::cout << "灵光（暴击率）：" << critRate << "%  超常发挥（额外伤害）：" << critDamage << "%\n";
+    std::cout << "精神状态：" << hp << "/" << maxHp << "  抗压：" << shield << "\n";
+    std::cout << "学力：" << getAttack() << "\n";
+    std::cout << "生活费：" << gold << "元\n";
+    std::cout << "灵光（暴击率）：" << critRate << "%  超常发挥（暴击伤害）：" << critDamage << "%\n";
     std::cout << "背包物品数：" << bag.size() << "\n";
     std::cout << "==============================\n";
 }
