@@ -16,7 +16,7 @@ RoomType Room::getType() const {
 
 void Room::showInfo() const {
     std::cout << "\n========================================\n";
-    std::cout << "[" << id_ << "号房间] " << name_ << "\n";
+    std::cout << "[" << id_ << "/11] " << name_ << "\n";
     std::cout << description_ << "\n";
     std::cout << "========================================\n";
 }

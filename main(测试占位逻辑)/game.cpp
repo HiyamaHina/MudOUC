@@ -1,27 +1,34 @@
 #include "game.h"
+#include "Story.h"
+#include "CampusContent.h"
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
 Game::Game() {
     createMap();
-    // 开局补给，便于第一次战斗时使用物品。
-    player_.addItem(Item("治疗药水", "potion", "恢复30点生命", 10, 30));
-    player_.addItem(Item("护盾药水", "shield", "增加15点护盾", 10, 0, 15));
 }
 
 void Game::createMap() {
-    rooms_.emplace_back(1, "起点营地", "准备补给，输入4选择第一条路线。", RoomType::Start);
-    rooms_.emplace_back(2, "林间岔路", "这里可能遭遇敌人，也可能发现补给。", RoomType::Battle);
-    rooms_.emplace_back(3, "守卫关口", "击败小Boss才能继续前进。", RoomType::Boss);
-    rooms_.emplace_back(4, "旅人驿站", "可以前往商店，或者探索补给区域。", RoomType::Shop);
-    rooms_.emplace_back(5, "休整营地", "在这里恢复生命，准备最终挑战。", RoomType::Rest);
-    rooms_.emplace_back(6, "最终Boss大厅", "击败最终Boss即可通关。", RoomType::Boss);
+    rooms_.emplace_back(1,"学业初航","书卷铺陈，少年初渡学海。",RoomType::Start);
+    rooms_.emplace_back(2,"初涉学海","大学生活，始于今日。",RoomType::Battle);
+    rooms_.emplace_back(3,"课业初临","第一份作业来了。",RoomType::Battle);
+    rooms_.emplace_back(4,"猝然一试","老师说：拿出纸笔。",RoomType::Boss);
+    rooms_.emplace_back(5,"「机缘」","命途偶有岔路，福祸皆在其中。",RoomType::Shop);
+    rooms_.emplace_back(6,"同舟共济","队友，永远是未知数。",RoomType::Battle);
+    rooms_.emplace_back(7,"半程问道","期中已至，成败一试。",RoomType::Boss);
+    rooms_.emplace_back(8,"「机缘」","命途偶有岔路，福祸皆在其中。",RoomType::Shop);
+    rooms_.emplace_back(9,"泛舟文海","论文之海，浩瀚无边。",RoomType::Battle);
+    rooms_.emplace_back(10,"偷得浮生","浮生半日闲，且将烦忧暂忘。",RoomType::Rest);
+    rooms_.emplace_back(11,"终局渡劫","最后的大考，避无可避。",RoomType::Boss);
 }
-
 void Game::start() {
     using namespace module5;
     ConsoleUI ui(std::cin, std::cout, prepareConsole());
+    std::cout << "\n================ 前情提要 ================\n" << storyText
+              << "\n按回车开始游戏……" << std::flush;
+    std::string ready;
+    if (!std::getline(std::cin, ready)) return;
     enterRoom(1);
     ui.setHeader([this] { showRoomScreen(); });
     ui.bind(Action::Attack, [this] { attack(); });
@@ -38,21 +45,23 @@ void Game::start() {
 void Game::showRoomScreen() const {
     const Room& room = rooms_.at(currentRoomId_ - 1);
     std::cout << "\n============================================================\n"
-              << "  货币战争  |  " << currentRoomId_ << " / 6  " << room.getName() << '\n'
+              << "  货币战争  |  " << currentRoomId_ << " / 11  " << room.getName() << '\n'
               << "------------------------------------------------------------\n"
-              << "  " << player_.getName() << "  Lv." << player_.getLevel()
+              << "  " << player_.getName()
               << "  生命 " << player_.getHp() << '/' << player_.getMaxHp()
               << "  护盾 " << player_.getShield() << "  金币 " << player_.getGold() << '\n'
-              << "  攻击 " << player_.getAttack() << "  武器 " << player_.getWeapon().name
+              << "  攻击 " << player_.getAttack()
               << "  背包 " << player_.getBag().size() << " 件\n"
+              << "  灵光（暴击率） " << player_.getCR() << "%  超常发挥（额外伤害） " << player_.getCD() << "%\n"
               << "------------------------------------------------------------\n"
               << "  " << room.getDescription() << '\n';
     if (!player_.isAlive())
         std::cout << "  状态：战败。可以输入6读档，或0退出。\n";
+    else if (pendingEvent_ > 0) std::cout << "  状态：奇遇等待选择，输入4继续处理。\n";
     else if (enemyHp_ > 0)
         std::cout << "  敌人：" << enemyName_ << "  生命 " << enemyHp_ << '/' << enemyMaxHp_
                   << "  攻击 " << enemyAttack_ << "\n  状态：战斗中，输入1攻击，击败敌人后才能离开。\n";
-    else if (currentRoomId_ == 6)
+    else if (currentRoomId_ == 11)
         std::cout << "  状态：通关！最终Boss已被击败。\n";
     else
         std::cout << "  状态：安全，可以整理背包，输入4继续前进。\n";
@@ -68,17 +77,15 @@ void Game::showBag() const {
 
 void Game::move() {
     if (!player_.isAlive()) { std::cout << "你已战败，请读档或退出。\n"; return; }
+    if (pendingEvent_ > 0) { runEvent(); return; }
     if (enemyHp_ > 0) { std::cout << "敌人挡住了出口，请先按1攻击。\n"; return; }
-    switch (currentRoomId_) {
-    case 1: chooseBranch1(); break;
-    case 2: enterRoom(3); runBattle(true); break;
-    case 3: chooseBranch2(); break;
-    case 4: enterRoom(5); runRest(); break;
-    case 5: enterRoom(6); runBattle(true); break;
-    default: std::cout << "已经通关，可以保存或退出。\n"; break;
-    }
+    if (currentRoomId_ == 11) { std::cout << "已经通关，可以保存或退出。\n"; return; }
+    const int next = currentRoomId_ + 1;
+    if (campus::battleBranch(next)) { chooseBranch1(); return; }
+    if (campus::shopBranch(next)) { chooseBranch2(); return; }
+    enterRoom(next);
+    if (next == 10) runRest(); else runBattle(true);
 }
-
 void Game::useItem() {
     if (!player_.isAlive()) { std::cout << "战败后不能使用物品，请读档或退出。\n"; return; }
     const auto& bag = player_.getBag();
@@ -95,14 +102,15 @@ void Game::useItem() {
 void Game::attack() {
     if (!player_.isAlive()) { std::cout << "你已战败，请读档或退出。\n"; return; }
     if (enemyHp_ <= 0) { std::cout << "当前没有敌人，无需攻击。按4前往下一房间。\n"; return; }
-    const int damage = player_.getAttack();
+    const bool critical = std::uniform_int_distribution<int>(1,100)(campus::random()) <= player_.getCR();
+    const int damage = critical ? static_cast<int>(player_.getAttack() * (1.0 + player_.getCD()/100.0)) : player_.getAttack();
+    if (critical) std::cout << "灵光乍现！暴击！\n";
     enemyHp_ = std::max(0, enemyHp_ - damage);
     std::cout << "你对" << enemyName_ << "造成 " << damage << " 点伤害。\n";
     if (enemyHp_ == 0) {
         std::cout << "战斗胜利！获得 " << enemyReward_ << " 金币。\n";
         player_.addGold(enemyReward_);
-        player_.gainExp(20);
-        if (currentRoomId_ == 6) std::cout << "恭喜通关！\n";
+        if (currentRoomId_ == 11) std::cout << "恭喜通关！\n";
         return; // 已击败的敌人不反击，再按攻击也不会重复发奖励。
     }
     std::cout << enemyName_ << "反击，攻击力 " << enemyAttack_ << "。\n";
@@ -114,9 +122,10 @@ void Game::save() {
     GameProgress progress;
     progress.currentRoomName = std::to_string(currentRoomId_);
     progress.stageIndex = currentRoomId_ - 1;
-    progress.formatVersion = 2;
+    progress.formatVersion = 3;
     progress.route = route_;
     progress.enemyHp = enemyHp_;
+    progress.pendingEvent = pendingEvent_;
     saves_.save(player_, progress);
 }
 
@@ -127,15 +136,17 @@ void Game::load() {
         std::cout << "没有找到存档，请先保存。\n";
         return;
     }
-    if (progress.stageIndex < 0 || progress.stageIndex > 5)
+    if (progress.stageIndex < 0 || progress.stageIndex > 10)
         throw std::runtime_error("存档房间编号无效。");
     const int id = progress.stageIndex + 1;
-    const bool branch = id == 2 || id == 4;
-    if (progress.formatVersion != 2 || id < 1 || id > 6 ||
+    const bool branch = campus::battleBranch(id) || campus::shopBranch(id);
+    if (progress.formatVersion != 3 || id < 1 || id > 11 ||
         progress.currentRoomName != std::to_string(id) ||
         (branch ? (progress.route != 1 && progress.route != 2) : progress.route != 0))
         throw std::runtime_error("存档版本或房间进度不兼容，请使用本版存档。");
-    const int maxHp = id == 6 ? 80 : id == 3 ? 50 : (id == 2 && progress.route == 1) ? 30 : 0;
+    const int maxHp = (!branch || progress.route == 1) ? campus::enemy(id).hp : 0;
+    if (progress.pendingEvent < 0 || progress.pendingEvent > 8 || (progress.pendingEvent > 0 && (!branch || progress.route != 2)))
+        throw std::runtime_error("存档事件无效。");
     if (progress.enemyHp < 0 || progress.enemyHp > maxHp)
         throw std::runtime_error("存档中的敌人血量无效。");
     // 读取不再触发事件、休息或战斗奖励。
@@ -144,68 +155,77 @@ void Game::load() {
     route_ = progress.route;
     if (maxHp > 0) runBattle(id != 2);
     enemyHp_ = progress.enemyHp;
+    pendingEvent_ = progress.pendingEvent;
     std::cout << "已恢复玩家、房间和敌人血量。\n";
 }
 
 void Game::enterRoom(int id) {
     currentRoomId_ = id;
     route_ = 0;
+    pendingEvent_ = 0;
     enemyName_.clear();
     enemyHp_ = enemyMaxHp_ = enemyAttack_ = enemyReward_ = 0;
 }
 
+
 void Game::chooseBranch1() {
-    std::cout << "\n[选择路线] 1 战斗小路   2 补给小路   0 取消\n";
-    const int choice = readChoice(0, 2);
+    std::cout << "\n[选择路线] 1 直面学业挑战   2 校园奇遇   0 取消\n";
+    const int choice = readChoice(0,2);
     if (choice == 0) return;
-    enterRoom(2);
+    enterRoom(currentRoomId_ + 1);
     route_ = choice;
     if (choice == 1) runBattle(false);
-    else runEvent();
+    else { pendingEvent_ = campus::eventId(); runEvent(); }
 }
-
 void Game::chooseBranch2() {
-    std::cout << "\n[选择路线] 1 商店   2 补给区域   0 取消\n";
-    const int choice = readChoice(0, 2);
+    std::cout << "\n[选择路线] 1 教育超市   2 校园奇遇   0 取消\n";
+    const int choice = readChoice(0,2);
     if (choice == 0) return;
-    // 商店操作完成后进入房间，输入结束时不会留下未完成的进度。
-    if (choice == 1) runShop();
-    enterRoom(4);
+    enterRoom(currentRoomId_ + 1);
     route_ = choice;
-    if (choice == 2) runEvent();
+    if (choice == 1) runShop();
+    else { pendingEvent_ = campus::eventId(); runEvent(); }
 }
-
-int Game::readChoice(int min, int max) {
-    return module5::CommandParser::readChoice(std::cin, std::cout, min, max);
+int Game::readChoice(int min,int max) {
+    return module5::CommandParser::readChoice(std::cin,std::cout,min,max);
 }
-
-// 基础敌人数值集中在这里。队友提供正式Enemy后，可替换此函数和attack。
-void Game::runBattle(bool isBoss) {
-    const bool finalBoss = currentRoomId_ == 6;
-    enemyName_ = finalBoss ? "城堡领主" : isBoss ? "关口守卫" : "林地盗贼";
-    enemyMaxHp_ = finalBoss ? 80 : isBoss ? 50 : 30;
-    enemyHp_ = enemyMaxHp_;
-    enemyAttack_ = finalBoss ? 10 : isBoss ? 8 : 5;
-    enemyReward_ = finalBoss ? 50 : isBoss ? 25 : 10;
+void Game::runBattle(bool /*isBoss*/) {
+    const auto e = campus::enemy(currentRoomId_);
+    enemyName_ = e.name;
+    enemyHp_ = enemyMaxHp_ = e.hp;
+    enemyAttack_ = e.attack;
+    enemyReward_ = e.gold;
 }
-
 void Game::runEvent() {
-    std::cout << "发现补给箱，获得10金币和一瓶治疗药水。\n";
-    player_.addGold(10);
-    player_.addItem(Item("治疗药水", "potion", "恢复30点生命", 10, 30));
+    campus::event(pendingEvent_,player_);
+    pendingEvent_ = 0;
 }
-
 void Game::runShop() {
-    std::cout << "\n[商店] 金币：" << player_.getGold()
-              << "\n1 治疗药水（10金币）  2 护盾药水（10金币）  0 离开\n";
-    const int choice = readChoice(0, 2);
-    if (choice == 0) return;
-    if (!player_.spendGold(10)) { std::cout << "金币不足，没有购买。\n"; return; }
-    player_.addItem(choice == 1 ? Item("治疗药水", "potion", "恢复30点生命", 10, 30)
-                               : Item("护盾药水", "shield", "增加15点护盾", 10, 0, 15));
+    // 五选三，商品进背包，由玩家用3主动使用；不加入任何暴击效果。
+    std::vector<Item> goods = {
+        Item("续命咖啡","campus","恢复40生命",12,40),
+        Item("期末救命包","campus","恢复75生命",22,75),
+        Item("抗压笔记","campus","增加50护盾",25,0,50),
+        Item("学霸笔记","campus","基础攻击增加5",30,0,0,5),
+        Item("幸运橡皮","campus","恢复30生命、增加30护盾、基础攻击增加3",55,30,30,3)
+    };
+    std::shuffle(goods.begin(),goods.end(),campus::random());
+    goods.resize(3);
+    while (!goods.empty()) {
+        std::cout << "\n[教育超市] 金币：" << player_.getGold() << '\n';
+        for (std::size_t i=0;i<goods.size();++i)
+            std::cout << i+1 << ". " << goods[i].name << " " << goods[i].price << "金币：" << goods[i].description << '\n';
+        std::cout << "0 离开；购买后在背包中使用。\n";
+        const int choice = readChoice(0,static_cast<int>(goods.size()));
+        if(choice==0) return;
+        const Item item = goods.at(choice-1);
+        if(!player_.spendGold(item.price)) { std::cout << "金币不足。\n"; continue; }
+        player_.addItem(item);
+        goods.erase(goods.begin()+choice-1);
+    }
+    std::cout << "商品已售罄。\n";
 }
-
 void Game::runRest() {
-    player_.heal(player_.getMaxHp());
-    std::cout << "休整完成，生命已恢复。输入4挑战最终Boss。\n";
+    player_.heal(40);
+    std::cout << "休整完成，恢复40生命（不超过上限）。输入4挑战期末大考。\n";
 }

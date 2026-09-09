@@ -10,13 +10,14 @@
 struct GameProgress {
     std::string currentRoomName = "StartRoom"; // 当前所在房间的名字/编号
     int stageIndex = 0;                        // 当前处于第几关/第几阶段，方便以后扩展
-    int formatVersion = 0; // 2：保存路线和敌人血量
+    int formatVersion = 0; // 3：11房间校园地图，包含路线、敌人血量和待处理事件
     int route = 0;         // 分支房间：1战斗/商店，2事件；其他房间为0
     int enemyHp = 0;       // 0表示已击败或没有敌人
+    int pendingEvent = 0;  // 第3版：尚未完成的事件ID，0表示无待处理事件
 };
 
 // 存档管理类。对应 UML 图里的 SaveManager。
-// 负责把 Player 的状态（等级、经验、血量、护盾、金币、背包、装备的武器）
+// 负责把 Player 的状态（血量、护盾、攻击力、金币、背包）
 // 以及游戏进度写入文本文件；也负责从文件读回来，恢复出一个 Player 对象。
 class SaveManager {
 public:

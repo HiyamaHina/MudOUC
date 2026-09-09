@@ -35,7 +35,7 @@ private:
     void runShop();
     void runRest();
 
-    Player player_{"Hero"};
+    Player player_{"学海行者"};
     SaveManager saves_{"save.txt"};
     // 简单战斗接入，正式战斗模块就绪后可替换 attack/runBattle。
     std::string enemyName_;
@@ -44,6 +44,7 @@ private:
     int enemyAttack_ = 0;
     int enemyReward_ = 0;
     int route_ = 0;
+    int pendingEvent_ = 0;
 
     std::vector<Room> rooms_;
     int currentRoomId_ = 0;

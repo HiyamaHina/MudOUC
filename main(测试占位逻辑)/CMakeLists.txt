@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(MudOUC main.cpp
         game.cpp
         game.h
+        CampusContent.h
+        Story.h
         room.cpp
         room.h
         ../Player.h
