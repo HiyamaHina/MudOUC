@@ -12,7 +12,13 @@ void Item::use() const {
 }
 
 void applyItemEffect(Player& player, const Item& item) {
-    if (item.type == "potion") {
+    if (item.type == "campus") {
+        if (item.healAmount > 0) player.heal(item.healAmount);
+        if (item.shieldAmount > 0) player.addShield(item.shieldAmount);
+        if (item.attackBonus > 0) player.setBaseAttack(player.getBaseAttack() + item.attackBonus);
+        player.removeItem(item.name);
+        std::cout << "使用了 " << item.name << "：" << item.description << std::endl;
+    } else if (item.type == "potion") {
         player.heal(item.healAmount);
         std::cout << player.getName() << " 使用了 " << item.name
                   << "，恢复了 " << item.healAmount << " 点生命值。"
@@ -24,12 +30,6 @@ void applyItemEffect(Player& player, const Item& item) {
                   << "，获得了 " << item.shieldAmount << " 点护盾。"
                   << " (当前护盾: " << player.getShield() << ")" << std::endl;
         player.removeItem(item.name);
-    } else if (item.type == "weapon") {
-        player.equipWeapon(item.name);
-        std::cout << player.getName() << " 装备了武器：" << item.name
-                  << "（攻击加成 +" << item.attackBonus << "）" << std::endl;
-        // 注意：武器不从背包里移除。Player.h 里 equippedWeapon 是指向背包里
-        // 某个元素的指针，武器本来就应该继续留在背包 vector 里。
     } else {
         // "key" 或其他剧情类道具，先只打印提示，具体触发逻辑交给房间/事件模块处理
         std::cout << item.name << " 是剧情/钥匙类道具，暂时没有直接效果。" << std::endl;
