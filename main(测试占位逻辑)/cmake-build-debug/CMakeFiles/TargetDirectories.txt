@@ -1,3 +1,0 @@
-C:/Users/21906/CLionProjects/MudOUC/cmake-build-debug/CMakeFiles/MudOUC.dir
-C:/Users/21906/CLionProjects/MudOUC/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/21906/CLionProjects/MudOUC/cmake-build-debug/CMakeFiles/rebuild_cache.dir
