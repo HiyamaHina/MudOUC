@@ -11,7 +11,7 @@ void Player::addCR(int amount) { setCriticalRate(critRate + amount); }
 void Player::addCD(int amount) { setCriticalDamage(critDamage + amount); }
 
 Player::Player(std::string name)
-    : name(name), maxHp(140), hp(140), shield(0), baseAttack(15), gold(20), critRate(10), critDamage(50) {}
+    : name(name), maxHp(160), hp(160), shield(0), baseAttack(20), gold(20), critRate(10), critDamage(50) {}
 
 std::string Player::getName() const {
     return name;
