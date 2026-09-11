@@ -201,13 +201,13 @@ void Game::runEvent() {
     pendingEvent_ = 0;
 }
 void Game::runShop() {
-    // 五选三，商品进背包，由玩家用3主动使用；不加入任何暴击效果。
     std::vector<Item> goods = {
-        Item("续命咖啡","campus","恢复40精神状态",12,40),
-        Item("期末救命包","campus","恢复75精神状态",22,75),
-        Item("抗压笔记","campus","增加50抗压",25,0,50),
+        Item("续命咖啡","campus","恢复30精神状态",20,30),
+        Item("期末救命包","campus","恢复55精神状态",28,45),
+        Item("抗压笔记","campus","增加30抗压",25,0,30),
         Item("学霸笔记","campus","学力增加5",30,0,0,5),
-        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",55,30,30,3)
+        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",60,30,30,3)
+        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",60,30,30,3)
     };
     std::shuffle(goods.begin(),goods.end(),campus::random());
     goods.resize(3);
