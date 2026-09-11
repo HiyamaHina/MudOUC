@@ -45,7 +45,7 @@ void Game::start() {
 void Game::showRoomScreen() const {
     const Room& room = rooms_.at(currentRoomId_ - 1);
     std::cout << "\n============================================================\n"
-              << "  货币战争  |  " << currentRoomId_ << " / 11  " << room.getName() << '\n'
+              << "  学海求生  |  " << currentRoomId_ << " / 11  " << room.getName() << '\n'
               << "------------------------------------------------------------\n"
               << "  " << player_.getName()
               << "  精神状态 " << player_.getHp() << '/' << player_.getMaxHp()
@@ -206,15 +206,16 @@ void Game::runShop() {
         Item("期末救命包","campus","恢复55精神状态",28,45),
         Item("抗压笔记","campus","增加30抗压",25,0,30),
         Item("学霸笔记","campus","学力增加5",30,0,0,5),
-        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",60,30,30,3),
-        Item("传奇盲盒","campus","有概率开出隐藏款哦（2500元）",300,1,1,1),
-        Item("神话盲盒","campus","有概率开出隐藏款哦（750元）",100,1,1,1),
-        Item("史诗盲盒","campus","有概率开出隐藏款哦（500元）",75,1,1,1),
-        Item("稀有盲盒","campus","有概率开出隐藏款哦（300元）",50,1,1,1),
-        Item("普通盲盒","campus","有概率开出隐藏款哦（50元）",10,1,1,1)
+        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加5",60,30,30,5),
+        Item("Tired Bull功能饮料","campus","恢复30精神状态、增加30抗压",40,30,30),
+        Item("传奇盲盒","campus","有概率开出隐藏奖励：2500元 哦！",300,1,1,1),
+        Item("神话盲盒","campus","有概率开出隐藏奖励：750元 哦！",100,1,1,1),
+        Item("史诗盲盒","campus","有概率开出隐藏奖励：500元 哦！",75,1,1,1),
+        Item("稀有盲盒","campus","有概率开出隐藏奖励：300元 哦！",50,1,1,1),
+        Item("普通盲盒","campus","有概率开出隐藏奖励：50元 哦！",10,1,1,1)
     };
     std::shuffle(goods.begin(),goods.end(),campus::random());
-    goods.resize(3);
+    goods.resize(4);
     while (!goods.empty()) {
         std::cout << "\n[教育超市] 生活费：" << player_.getGold() << "元\n";
         for (std::size_t i=0;i<goods.size();++i)
