@@ -206,8 +206,8 @@ void Game::runShop() {
         Item("期末救命包","campus","恢复55精神状态",28,45),
         Item("抗压笔记","campus","增加30抗压",25,0,30),
         Item("学霸笔记","campus","学力增加5",30,0,0,5),
-        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",60,30,30,3)
-        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",60,30,30,3)
+        Item("幸运橡皮","campus","恢复30精神状态、增加30抗压、学力增加3",60,30,30,3),
+        Item("超级盲盒","campus","有概率开出隐藏款哦",100,1,1,1)
     };
     std::shuffle(goods.begin(),goods.end(),campus::random());
     goods.resize(3);
@@ -219,7 +219,7 @@ void Game::runShop() {
         const int choice = readChoice(0,static_cast<int>(goods.size()));
         if(choice==0) return;
         const Item item = goods.at(choice-1);
-        if(!player_.spendGold(item.price)) { std::cout << "金币不足。\n"; continue; }
+        if(!player_.spendGold(item.price)) { std::cout << "生活费不足。\n"; continue; }
         player_.addItem(item);
         goods.erase(goods.begin()+choice-1);
     }
