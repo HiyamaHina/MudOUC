@@ -4,7 +4,6 @@
 #include <iostream>
 #include <random>
 
-// 来自908.rar的校园内容；保留原版事件中的暴击属性变化。
 namespace campus {
 struct EnemyInfo { const char* name; int hp; int attack; int gold; };
 inline EnemyInfo enemy(int room) {
@@ -25,7 +24,7 @@ inline std::mt19937& random() { static std::mt19937 generator(std::random_device
 inline int eventId() { return std::uniform_int_distribution<int>(1,8)(random()); }
 inline void event(int id, Player& p) {
     const char* names[] = {"", "校园商人（一）", "校园忽悠（二）", "焚化工", "自灭者的火种",
-                           "学业性梦境", "来交换礼物吧", "校园好人（三）", "无尽黑暗"};
+                           "学业性梦境", "来交换礼物吧", "校园好人（三）", "无尽黑暗","没有喘息空间的课表"};
     std::cout << "\n[校园奇遇] " << names[id] << '\n';
     switch(id) {
     case 1: std::cout << "1 金属许愿瓶：20元换10抗压\n2 银矿许愿瓶：40元换25抗压\n3 离开\n"; break;
@@ -36,6 +35,7 @@ inline void event(int id, Player& p) {
     case 6: std::cout << "1 祝福交换：精神状态减半，获得等额抗压\n2 离开\n"; break;
     case 7: std::cout << "1 钻石盒：5元，精神状态上限+20%\n2 原矿盒：5元，学力增加15%\n3 离开\n"; break;
     case 8: std::cout << "1 前往黑暗：损失一半生活费\n2 对抗引力：承受当前精神状态60%的压力\n"; break;
+    case 9: std::cout << "1 坚持从早八撑到晚九：精神状态减少30%\n2 逃课爽玩：恢复20%上限的精神状态，学力降低30%\n"; break;
     }
     // 先读取选择再修改角色；输入中断时事件保持待处理状态。
     const int c = module5::CommandParser::readChoice(std::cin,std::cout,1,(id==1||id==2||id==7)?3:2);
@@ -52,6 +52,7 @@ inline void event(int id, Player& p) {
     case 6: if(c==1) { int sacrifice=p.getHp()/2; p.setHp(p.getHp()-sacrifice); p.addShield(sacrifice); } break;
     case 7: if(c==1 && pay(5)) p.addMaxHp(p.getMaxHp()*20/100); else if(c==2 && pay(5)) p.setBaseAttack(p.getBaseAttack()+p.getAttack()*15/100); break;
     case 8: if(c==1) p.spendGold(p.getGold()/2); else p.takeDamage(p.getHp()*60/100); break;
+    case 9: if(c==1) {int sacrifice=p.getHp()*3/10; p.setHp(p.getHp()-sacrifice);}else{ p.setBaseAttack(p.getBaseAttack()*70/100); p.heal(p.getMaxHp()*20/100); } break;
     }
     std::cout << "奇遇结束。\n";
 }
