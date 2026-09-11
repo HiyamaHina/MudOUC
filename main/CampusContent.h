@@ -21,7 +21,7 @@ inline EnemyInfo enemy(int room) {
 inline bool battleBranch(int id) { return id==2 || id==3 || id==6 || id==9; }
 inline bool shopBranch(int id) { return id==5 || id==8; }
 inline std::mt19937& random() { static std::mt19937 generator(std::random_device{}()); return generator; }
-inline int eventId() { return std::uniform_int_distribution<int>(1,8)(random()); }
+inline int eventId() { return std::uniform_int_distribution<int>(1,9)(random()); }
 inline void event(int id, Player& p) {
     const char* names[] = {"", "校园商人（一）", "校园忽悠（二）", "焚化工", "自灭者的火种",
                            "学业性梦境", "来交换礼物吧", "校园好人（三）", "无尽黑暗","没有喘息空间的课表"};
