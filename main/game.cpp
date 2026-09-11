@@ -13,7 +13,7 @@ void Game::createMap() {
     rooms_.emplace_back(1,"学业初航","书卷铺陈，少年初渡学海。",RoomType::Start);
     rooms_.emplace_back(2,"初涉学海","大学生活，始于今日。",RoomType::Battle);
     rooms_.emplace_back(3,"课业初临","第一份作业来了。",RoomType::Battle);
-    rooms_.emplace_back(4,"猝然一试","老师说：拿出纸笔。",RoomType::Boss);
+    rooms_.emplace_back(4,"猝然一试","老师说：关掉手机，拿出纸笔。",RoomType::Boss);
     rooms_.emplace_back(5,"「机缘」","命途偶有岔路，福祸皆在其中。",RoomType::Shop);
     rooms_.emplace_back(6,"同舟共济","队友，永远是未知数。",RoomType::Battle);
     rooms_.emplace_back(7,"半程问道","期中已至，成败一试。",RoomType::Boss);
