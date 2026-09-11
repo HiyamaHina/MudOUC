@@ -212,9 +212,9 @@ void Game::runShop() {
     std::shuffle(goods.begin(),goods.end(),campus::random());
     goods.resize(3);
     while (!goods.empty()) {
-        std::cout << "\n[教育超市] 生活费：" << player_.getGold() << '元\n';
+        std::cout << "\n[教育超市] 生活费：" << player_.getGold() << "元\n";
         for (std::size_t i=0;i<goods.size();++i)
-            std::cout << i+1 << ". " << goods[i].name << " " << goods[i].price << "价格：" << goods[i].description << '元\n';
+            std::cout << i+1 << ". " << goods[i].name << " " << goods[i].price << "价格：" << goods[i].description << "元\n";
         std::cout << "0 离开；购买后在背包中使用。\n";
         const int choice = readChoice(0,static_cast<int>(goods.size()));
         if(choice==0) return;
