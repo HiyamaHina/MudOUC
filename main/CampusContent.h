@@ -12,9 +12,9 @@ inline EnemyInfo enemy(int room) {
     case 3: return {"第一份作业",55,10,15};
     case 4: return {"随堂测验",100,14,40};
     case 6: return {"小组作业",75,14,20};
-    case 7: return {"期中考试",115,15,60};
+    case 7: return {"期中考试",115,20,60};
     case 9: return {"水课论文",90,17,25};
-    case 11: return {"期末大考",160,18,100};
+    case 11: return {"期末大考",160,25,100};
     default: return {"",0,0,0};
     }
 }
@@ -36,7 +36,7 @@ inline void event(int id, Player& p) {
     case 7: std::cout << "1 钻石盒：5元，精神状态上限+20%\n2 原矿盒：5元，学力增加15%\n3 离开\n"; break;
     case 8: std::cout << "1 前往黑暗：损失一半生活费\n2 对抗引力：承受当前精神状态60%的压力\n"; break;
     case 9: std::cout << "1 坚持从早八撑到晚九：精神状态减少30%\n2 逃课爽玩：恢复20%上限的精神状态，学力降低30%\n"; break;
-    case 10: std::cout << "1 被抢走所有金币\n2 被揍到昏天黑地\n"; break;
+    case 10: std::cout << "1 被抢走巨额金币\n2 被揍到昏天黑地\n"; break;
     case 11: std::cout << "1 积极互动：学力+20%\n2 摸鱼度日：精神状态上限+15%\n"; break;  
     }
     // 先读取选择再修改角色；输入中断时事件保持待处理状态。
@@ -55,7 +55,7 @@ inline void event(int id, Player& p) {
     case 7: if(c==1 && pay(5)) p.addMaxHp(p.getMaxHp()*20/100); else if(c==2 && pay(5)) p.setBaseAttack(p.getBaseAttack()+p.getAttack()*15/100); break;
     case 8: if(c==1) p.spendGold(p.getGold()/2); else p.takeDamage(p.getHp()*60/100); break;
     case 9: if(c==1) {int sacrifice=p.getHp()*3/10; p.setHp(p.getHp()-sacrifice);}else{ p.setBaseAttack(p.getBaseAttack()*70/100); p.heal(p.getMaxHp()*20/100); } break;
-    case 10: if(c==1) p.spendGold(p.getGold()); else {int sacrifice=p.getHp()-1; p.setHp(p.getHp()-sacrifice);} break;
+    case 10: if(c==1) p.spendGold(p.getGold()*0.9); else {int sacrifice=p.getHp()-10; p.setHp(p.getHp()-sacrifice);} break;
     case 11: if(c==1) p.setBaseAttack(p.getBaseAttack()*120/100);else {p.addMaxHp(p.getMaxHp()*15/100);p.setHp(p.getHp()*1.15);} break; 
     }
     std::cout << "奇遇结束。\n";
